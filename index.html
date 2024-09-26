@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cast to TV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Cast to TV Demo</h1>
+    <p>Click the button below to cast this content to a compatible TV.</p>
+
+    <button id="castButton">Cast to TV</button>
+
+    <script>
+        // Load the Google Cast SDK
+        window['__onGCastApiAvailable'] = function(isAvailable) {
+            if (isAvailable) {
+                initializeCastApi();
+            }
+        };
+
+        function initializeCastApi() {
+            const castContext = cast.framework.CastContext.getInstance();
+            castContext.setOptions({
+                receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+                autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+            });
+        }
+
+        document.getElementById('castButton').addEventListener('click', function() {
+            const castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+
+            if (!castSession) {
+                cast.framework.CastContext.getInstance().requestSession();
+            } else {
+                castSession.loadMedia(new chrome.cast.media.MediaInfo('https://path-to-media-file.mp4', 'video/mp4'));
+            }
+        });
+    </script>
+
+    <script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js"></script>
+</body>
+</html>
